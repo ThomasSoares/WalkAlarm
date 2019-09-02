@@ -1,14 +1,30 @@
 package com.example.walkalarm.Fragments;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
+import com.example.walkalarm.Adapters.AlarmAdapter;
+import com.example.walkalarm.Classes.Alarm;
+import com.example.walkalarm.Listeners.RecyclerTouchListener;
 import com.example.walkalarm.R;
+import com.ramotion.cardslider.CardSliderLayoutManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,6 +45,11 @@ public class AlarmFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    private List<Alarm> alarmList=new ArrayList<>();
+    private RecyclerView alarmRecyclerView;
+    private AlarmAdapter alarmAdapter;
+    private ImageButton addButton;
 
     public AlarmFragment() {
         // Required empty public constructor
@@ -65,7 +86,70 @@ public class AlarmFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_alarm, container, false);
+        View parentView= inflater.inflate(R.layout.fragment_alarm, container, false);
+
+        alarmRecyclerView=parentView.findViewById(R.id.alarmRecyclerView);
+
+        alarmAdapter=new AlarmAdapter(alarmList);
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int height = displaymetrics.heightPixels;
+        int width = displaymetrics.widthPixels;
+
+        if(width==1440)
+        {
+            width=1000;
+        }
+        else if(width==1080)
+        {
+            width=760;
+        }
+
+        RecyclerView.LayoutManager mLayoutManager=new CardSliderLayoutManager(50,width,12);
+        alarmRecyclerView.setLayoutManager(mLayoutManager);
+        alarmRecyclerView.setAdapter(alarmAdapter);
+
+
+        prepareAlarmData();
+
+        alarmRecyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), alarmRecyclerView, new RecyclerTouchListener.ClickListener() {
+            @Override
+            public void OnClick(View view, int position) {
+
+            }
+
+            @Override
+            public void onLongClick(View view, int position) {
+
+            }
+        }));
+
+        addButton=parentView.findViewById(R.id.addButton);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Toast.makeText(getContext(), "Test",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        return parentView;
+    }
+
+    private void prepareAlarmData()
+    {
+
+        Alarm alarm=new Alarm("On","Weekends","05:00 AM","Carbon","30");
+        alarmList.add(alarm);
+
+        alarm=new Alarm("On","Weekends","05:00 AM","Carbon","30");
+        alarmList.add(alarm);
+
+        alarm=new Alarm("On","Weekends","05:00 AM","Carbon","30");
+        alarmList.add(alarm);
+
+        alarmAdapter.notifyDataSetChanged();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
